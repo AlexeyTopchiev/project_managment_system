@@ -1,0 +1,32 @@
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+
+  @media (max-width: 768px) {
+    padding: 6px 12px;
+    font-size: 13px;
+
+    span {
+      display: none;
+    }
+  }
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+}
