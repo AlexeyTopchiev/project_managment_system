@@ -2,7 +2,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #3b82f6;
+  // background-color: #3b82f6;
+  background-color: #2980b9;
   color: white;
   border: none;
   border-radius: 6px;
@@ -13,7 +14,8 @@
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #2563eb;
+    // background-color: #2563eb;
+    background-color: #3498db;
   }
 
   @media (max-width: 768px) {

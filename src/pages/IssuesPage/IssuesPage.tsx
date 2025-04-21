@@ -1,6 +1,6 @@
-// IssuesPage.tsx
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
+import CreateIssueButton from "../../features/issues/CreateIssueButton/"
 import styles from "./IssuesPage.module.scss"
 
 interface AssignedUserForTask {
@@ -35,7 +35,9 @@ const IssuesPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [assigneeSearch, setAssigneeSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("")
+  const [boardFilter, setBoardFilter] = useState<string>("")
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -66,19 +68,47 @@ const IssuesPage = () => {
     fetchTasks()
   }, [])
 
+  // Получаем уникальные доски для фильтра
+  const uniqueBoards = Array.from(new Set(tasks.map(task => task.boardId))).map(
+    boardId => {
+      const task = tasks.find(t => t.boardId === boardId)
+      return {
+        id: boardId,
+        name: task?.boardName || `Board ${boardId}`
+      }
+    }
+  )
+
   const filteredTasks = tasks.filter(task => {
-    const matchesSearch =
-      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase())
+    // Поиск по названию и описанию задачи
+    const matchesSearch = searchTerm
+      ? task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        task.description.toLowerCase().includes(searchTerm.toLowerCase())
+      : true
+
+    // Поиск по исполнителю
+    const matchesAssignee = assigneeSearch
+      ? task.assignee?.fullName
+          .toLowerCase()
+          .includes(assigneeSearch.toLowerCase())
+      : true
+
+    // Фильтр по статусу
     const matchesStatus = statusFilter ? task.status === statusFilter : true
-    return matchesSearch && matchesStatus
+
+    // Фильтр по доске
+    const matchesBoard = boardFilter
+      ? task.boardId === Number(boardFilter)
+      : true
+
+    return matchesSearch && matchesAssignee && matchesStatus && matchesBoard
   })
 
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>
-        <p>Loading tasks...</p>
+        <p>Загрузка задач...</p>
       </div>
     )
   }
@@ -86,7 +116,7 @@ const IssuesPage = () => {
   if (error) {
     return (
       <div className={styles.errorContainer}>
-        <h3>Error loading tasks</h3>
+        <h3>Ошибка загрузки задач</h3>
         <p>{error}</p>
         <button
           onClick={() => window.location.reload()}
@@ -103,20 +133,42 @@ const IssuesPage = () => {
       <div className={styles.controls}>
         <input
           type="text"
-          placeholder="Search tasks..."
+          placeholder="Название/описание задачи"
           className={styles.searchInput}
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
+
+        <input
+          type="text"
+          placeholder="Исполнитель"
+          className={styles.searchInput}
+          value={assigneeSearch}
+          onChange={e => setAssigneeSearch(e.target.value)}
+        />
+
         <select
           className={styles.filterSelect}
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value)}
         >
-          <option value="">All Statuses</option>
+          <option value="">Все статусы</option>
           <option value="Backlog">Backlog</option>
           <option value="InProgress">In Progress</option>
           <option value="Done">Done</option>
+        </select>
+
+        <select
+          className={styles.filterSelect}
+          value={boardFilter}
+          onChange={e => setBoardFilter(e.target.value)}
+        >
+          <option value="">Все доски</option>
+          {uniqueBoards.map(board => (
+            <option key={board.id} value={board.id}>
+              {board.name}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -147,7 +199,7 @@ const IssuesPage = () => {
 
               <div className={styles.taskFooter}>
                 <div className={styles.boardInfo}>
-                  <span>Board: </span>
+                  <span>Доска: </span>
                   <Link
                     to={`/board/${task.boardId}`}
                     className={styles.boardLink}
@@ -169,10 +221,16 @@ const IssuesPage = () => {
               </div>
             </div>
             <Link to={`/tasks/${task.id}`} className={styles.viewButton}>
-              View Details →
+              Подробнее →
             </Link>
           </div>
         ))}
+      </div>
+      <div className={styles.bottomActions}>
+        {/* <Link to="/tasks/create" className={styles.createButton}>
+          Создать новую задачу
+        </Link> */}
+        <CreateIssueButton />
       </div>
     </div>
   )

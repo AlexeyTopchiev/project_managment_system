@@ -139,33 +139,42 @@ $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 
 .errorContainer {
   text-align: center;
-  padding: 40px;
-  max-width: 500px;
+  padding: 2rem;
+  max-width: 600px;
   margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   h3 {
-    color: $error-color;
-    margin-bottom: 8px;
-  }
-
-  p {
-    color: $text-secondary;
-    margin-bottom: 16px;
+    color: #e74c3c;
+    margin-bottom: 1rem;
   }
 }
 
+.errorTitle {
+  font-weight: 500;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.errorMessage {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+}
+
 .retryButton {
-  background: $primary-color;
+  padding: 0.75rem 1.5rem;
+  background-color: #3498db;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 14px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s;
+  font-weight: 500;
+  transition: background-color 0.2s;
 
   &:hover {
-    background: darken($primary-color, 10%);
+    background-color: #2980b9;
   }
 }
 

@@ -13,9 +13,9 @@ const Layout = () => {
         </div>
       </main>
 
-      <footer className={styles.footer}>
+      {/* <footer className={styles.footer}>
         <p>Project Management System © {new Date().getFullYear()}</p>
-      </footer>
+      </footer> */}
     </div>
   )
 }
