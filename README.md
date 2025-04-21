@@ -1,46 +1,52 @@
-# Getting Started with Create React App
+# Тестовое задание Авито. Система управления проектами (Project managments system)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
+Для выполнения был выбран стек React + TypeScript + Redux
 
-## Available Scripts
+### Клиентская часть (Основные команды)
 
-In the project directory, you can run:
+#### установка зависимостей
 
-### `yarn start`
+##### `npm install`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+#### альтернативный вариант установки
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+##### `yarn`
 
-### `yarn test`
+### Серверная часть (Docker)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Код расположен в папке server.
+Для управления Docker-контейнером доступны следующие команды:
 
-### `yarn build`
+#### Полная перезапуск приложения (очистка + сборка + запуск)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+##### `make initial-start`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### Собрать Docker-образ приложения
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+##### `make build`
 
-### `yarn eject`
+#### Запустить контейнер с приложением
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+##### `make run`
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### Остановить контейнер
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+##### `make stop`
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+#### Остановить и удалить контейнер
 
-## Learn More
+##### `make clean`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### Удалить Docker-образ
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+##### `make clean-image`
+
+#### Полная очистка (удаление контейнера и образа)
+
+##### `make clean-all`
+
+#### После запуска контейнера документация будет доступна по ссылке http://127.0.0.1:8080/swagger/index.html
+
+### Комментарии к проекту:
+
+По личным обстоятельствам на реализацию проекта у меня было чуть более двух дней, поэтому была выбрана направленность на достижение максимального результата, с возможностью дальнейшего рефакторинга в будущем, старался успеть реализовать как можно больше функционала, местами из за этого страдала красота кода. Весь функционал задания реализовать не успел, постарался по максимому, в случае возможности доделать, буду рад завершить полностью функционал, который не успел. Спасибо за внимание! :)
