@@ -1,6 +1,5 @@
 import { useState } from "react"
-// import { PlusIcon } from "@heroicons/react/outline"
-// import IssueFormModal from "./IssueFormModal"
+import IssueFormModal from "../IssueFormModal/IssueFormModal"
 import styles from "./CreateIssueButton.module.scss"
 
 const CreateIssueButton = () => {
@@ -9,10 +8,10 @@ const CreateIssueButton = () => {
   return (
     <>
       <button className={styles.createButton} onClick={() => setIsOpen(true)}>
-        {/* <PlusIcon className={styles.icon} /> */}+<span>Создать задачу</span>
+        <span>Создать задачу</span>
       </button>
 
-      {/* <IssueFormModal isOpen={isOpen} onClose={() => setIsOpen(false)} /> */}
+      <IssueFormModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   )
 }

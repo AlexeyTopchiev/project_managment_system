@@ -16,6 +16,11 @@
   max-width: 1200px;
   margin: 0 auto;
 
+  .headerNav {
+    display: flex;
+    align-items: center;
+  }
+
   @media (max-width: 768px) {
     padding: 0 16px;
     height: 56px;
@@ -36,7 +41,7 @@
 .nav {
   display: flex;
   gap: 32px;
-  margin: 0 32px;
+  margin: 0 64px;
 
   @media (max-width: 768px) {
     gap: 16px;

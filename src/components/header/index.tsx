@@ -10,28 +10,30 @@ const Header = () => {
   return (
     <header className={styles.header}>
       <div className={styles.headerContainer}>
-        <Link to="/" className={styles.logo}>
-          Project Manager
-        </Link>
+        <div className={styles.headerNav}>
+          <Link to="/" className={styles.logo}>
+            Project Manager
+          </Link>
 
-        <nav className={styles.nav}>
-          <Link
-            to="/issues"
-            className={`${styles.navLink} ${
-              isActive("/issues") || isActive("/") ? styles.active : ""
-            }`}
-          >
-            Все задачи
-          </Link>
-          <Link
-            to="/boards"
-            className={`${styles.navLink} ${
-              isActive("/boards") ? styles.active : ""
-            }`}
-          >
-            Доски
-          </Link>
-        </nav>
+          <nav className={styles.nav}>
+            <Link
+              to="/issues"
+              className={`${styles.navLink} ${
+                isActive("/issues") || isActive("/") ? styles.active : ""
+              }`}
+            >
+              Все задачи
+            </Link>
+            <Link
+              to="/boards"
+              className={`${styles.navLink} ${
+                isActive("/boards") ? styles.active : ""
+              }`}
+            >
+              Доски
+            </Link>
+          </nav>
+        </div>
         <CreateIssueButton />
       </div>
     </header>

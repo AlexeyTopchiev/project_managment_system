@@ -220,16 +220,13 @@ const IssuesPage = () => {
                 )}
               </div>
             </div>
-            <Link to={`/tasks/${task.id}`} className={styles.viewButton}>
+            {/* <Link to={`/tasks/${task.id}`} className={styles.viewButton}>
               Подробнее →
-            </Link>
+            </Link> */}
           </div>
         ))}
       </div>
       <div className={styles.bottomActions}>
-        {/* <Link to="/tasks/create" className={styles.createButton}>
-          Создать новую задачу
-        </Link> */}
         <CreateIssueButton />
       </div>
     </div>
