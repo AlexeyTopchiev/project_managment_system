@@ -1,0 +1,250 @@
+// IssuesPage.module.scss
+.issuesPage {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin: 0;
+  }
+}
+
+.headerActions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.createButton {
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #2980b9;
+  }
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+
+  .searchInput {
+    flex-grow: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 200px;
+    max-width: 400px;
+  }
+
+  .filterSelect {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 150px;
+  }
+}
+
+.tasksList {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.taskCard {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.taskContent {
+  flex-grow: 1;
+}
+
+.taskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+  }
+}
+
+.taskMeta {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status,
+.priority {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status {
+  &.backlog {
+    background-color: #f1c40f;
+    color: #2c3e50;
+  }
+  &.inprogress {
+    background-color: #3498db;
+    color: white;
+  }
+  &.done {
+    background-color: #2ecc71;
+    color: white;
+  }
+}
+
+.priority {
+  &.low {
+    background-color: #f1f1f1;
+    color: #7f8c8d;
+  }
+  &.medium {
+    background-color: #f39c12;
+    color: white;
+  }
+  &.high {
+    background-color: #e74c3c;
+    color: white;
+  }
+}
+
+.description {
+  color: #7f8c8d;
+  margin: 1rem 0;
+  line-height: 1.5;
+}
+
+.taskFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.boardInfo {
+  color: #7f8c8d;
+
+  .boardLink {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.assignee {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.viewButton {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  color: #3498db;
+  text-decoration: none;
+  border: 1px solid #3498db;
+  border-radius: 4px;
+  transition: all 0.2s;
+  text-align: center;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #3498db;
+    color: white;
+  }
+}
+
+.loadingContainer,
+.errorContainer {
+  text-align: center;
+  padding: 2rem;
+}
+
+.errorContainer {
+  .retryButton {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #c0392b;
+    }
+  }
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #3498db;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
