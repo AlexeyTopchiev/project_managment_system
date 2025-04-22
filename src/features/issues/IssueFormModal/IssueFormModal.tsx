@@ -143,7 +143,7 @@ const IssueFormModal = ({
   if (!isOpen) return null
 
   return (
-    <div className={styles.modalOverlay}>
+    <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <h2>
