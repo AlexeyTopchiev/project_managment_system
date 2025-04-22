@@ -1,34 +1,8 @@
 import { useState, useEffect } from "react"
 import { useLocation, useNavigate, Link } from "react-router-dom"
+import { Users, Boards, TaskFormData } from "./types"
 import styles from "./IssueFormModal.module.scss"
 import { users, boards } from "../../../app/mockData"
-
-interface User {
-  id: number
-  fullName: string
-}
-
-interface Users {
-  data: User[]
-}
-
-interface Board {
-  id: number
-  name: string
-}
-
-interface Boards {
-  data: Board[]
-}
-
-interface TaskFormData {
-  title: string
-  description: string
-  boardId: number | null
-  priority: "Low" | "Medium" | "High"
-  status: "Backlog" | "InProgress" | "Done"
-  assigneeId: number | null
-}
 
 interface IssueFormModalProps {
   isOpen: boolean

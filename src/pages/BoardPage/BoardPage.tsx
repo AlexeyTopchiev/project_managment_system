@@ -2,28 +2,8 @@ import { useState, useEffect } from "react"
 import { Link, useParams } from "react-router-dom"
 import CreateIssueButton from "../../features/issues/CreateIssueButton/"
 import TaskCard from "../../features/board/TaskCard/index"
+import { Task, ErrorResponse } from "./types"
 import styles from "./BoardPage.module.scss"
-
-interface Assignee {
-  id: number
-  avatarUrl: string
-  email: string
-  fullName: string
-}
-
-interface Task {
-  id: number
-  title: string
-  description: string
-  priority: "Low" | "Medium" | "High"
-  status: "Backlog" | "InProgress" | "Done"
-  assignee: Assignee | null
-}
-
-interface ErrorResponse {
-  error: string
-  message: string
-}
 
 const BoardPage = () => {
   const { boardId } = useParams<{ boardId: string }>()

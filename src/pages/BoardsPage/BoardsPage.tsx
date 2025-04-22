@@ -1,18 +1,7 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
+import { Board, ErrorResponse } from "./types"
 import styles from "./BoardsPage.module.scss"
-
-interface Board {
-  id: number
-  name: string
-  description: string
-  taskCount: number
-}
-
-interface ErrorResponse {
-  error: string
-  message: string
-}
 
 const BoardsPage = () => {
   const [boards, setBoards] = useState<Board[]>([])

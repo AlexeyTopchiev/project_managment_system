@@ -1,25 +1,5 @@
+import { TaskCardProps } from "./types"
 import styles from "./TaskCard.module.scss"
-
-interface Task {
-  id: number
-  title: string
-  description: string
-  priority: "Low" | "Medium" | "High"
-  status: "Backlog" | "InProgress" | "Done"
-  assignee: Assignee | null
-}
-
-interface Assignee {
-  id: number
-  avatarUrl: string
-  email: string
-  fullName: string
-}
-
-interface TaskCardProps {
-  task: Task
-  boardId: string
-}
 
 const TaskCard = ({ task, boardId }: TaskCardProps) => {
   return (

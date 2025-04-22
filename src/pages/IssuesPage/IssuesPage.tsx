@@ -2,34 +2,8 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import CreateIssueButton from "../../features/issues/CreateIssueButton/"
 import InfoModal from "../../components/infoModal"
+import { Task, ApiResponse, ErrorResponse } from "./types"
 import styles from "./IssuesPage.module.scss"
-
-interface AssignedUserForTask {
-  id: number
-  avatarUrl: string
-  email: string
-  fullName: string
-}
-
-interface Task {
-  id: number
-  title: string
-  description: string
-  status: "Backlog" | "InProgress" | "Done"
-  priority: "Low" | "Medium" | "High"
-  boardId: number
-  boardName: string
-  assignee: AssignedUserForTask | null
-}
-
-interface ApiResponse {
-  data: Task[]
-}
-
-interface ErrorResponse {
-  error: string
-  message: string
-}
 
 const IssuesPage = () => {
   const [tasks, setTasks] = useState<Task[]>([])
