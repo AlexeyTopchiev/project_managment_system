@@ -1,0 +1,73 @@
+.taskCard {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.taskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+
+  h4 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+  }
+}
+
+.taskMeta {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.priority {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+
+  &.low {
+    background-color: #f1f1f1;
+    color: #7f8c8d;
+  }
+  &.medium {
+    background-color: #f39c12;
+    color: white;
+  }
+  &.high {
+    background-color: #e74c3c;
+    color: white;
+  }
+}
+
+.taskDescription {
+  color: #7f8c8d;
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
+}
+
+.assignee {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+
+  .avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}

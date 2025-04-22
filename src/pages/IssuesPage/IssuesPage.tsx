@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import CreateIssueButton from "../../features/issues/CreateIssueButton/"
+import InfoModal from "../../components/infoModal"
 import styles from "./IssuesPage.module.scss"
 
 interface AssignedUserForTask {
@@ -38,6 +39,7 @@ const IssuesPage = () => {
   const [assigneeSearch, setAssigneeSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("")
   const [boardFilter, setBoardFilter] = useState<string>("")
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -223,12 +225,19 @@ const IssuesPage = () => {
             {/* <Link to={`/tasks/${task.id}`} className={styles.viewButton}>
               Подробнее →
             </Link> */}
+            <div
+              className={styles.viewButton}
+              onClick={() => setIsModalOpen(true)}
+            >
+              Подробнее →
+            </div>
           </div>
         ))}
       </div>
       <div className={styles.bottomActions}>
         <CreateIssueButton />
       </div>
+      <InfoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )
 }

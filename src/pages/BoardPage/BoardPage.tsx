@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Link, useParams } from "react-router-dom"
 import CreateIssueButton from "../../features/issues/CreateIssueButton/"
+import TaskCard from "../../features/board/TaskCard/index"
 import styles from "./BoardPage.module.scss"
 
 interface Assignee {
@@ -85,9 +86,6 @@ const BoardPage = () => {
 
   const groupedTasks = groupTasksByStatus()
 
-  console.log("tasks", tasks)
-  console.log("groupedTasks", groupedTasks)
-
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
@@ -162,49 +160,6 @@ const BoardPage = () => {
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-interface TaskCardProps {
-  task: Task
-  boardId: string
-}
-
-const TaskCard = ({ task, boardId }: TaskCardProps) => {
-  return (
-    <div className={styles.taskCard}>
-      <div className={styles.taskHeader}>
-        <h4>{task.title}</h4>
-        <div className={styles.taskMeta}>
-          <span
-            className={`${styles.priority} ${
-              styles[task.priority.toLowerCase()]
-            }`}
-          >
-            {task.priority}
-          </span>
-        </div>
-      </div>
-      <p className={styles.taskDescription}>{task.description}</p>
-
-      {task.assignee && (
-        <div className={styles.assignee}>
-          <img
-            src={task.assignee.avatarUrl || "/default-avatar.png"}
-            alt={task.assignee.fullName}
-            className={styles.avatar}
-          />
-          <span>{task.assignee.fullName}</span>
-        </div>
-      )}
-
-      {/* <Link
-        to={`/board/${boardId}/task/${task.id}`}
-        className={styles.viewButton}
-      >
-        Подробнее →
-      </Link> */}
     </div>
   )
 }

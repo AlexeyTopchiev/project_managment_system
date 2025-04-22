@@ -1,16 +1,16 @@
 import React from "react"
-import styles from "./SimpleModal.module.scss"
+import styles from "./infoModal.module.scss"
 
-interface SimpleModalProps {
+interface InfoModalProps {
   isOpen: boolean
   onClose: () => void
 }
 
-const SimpleModal: React.FC<SimpleModalProps> = ({ isOpen, onClose }) => {
+const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null
 
   return (
-    <div className={styles.modalOverlay}>
+    <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <h3>Информация</h3>
@@ -19,16 +19,20 @@ const SimpleModal: React.FC<SimpleModalProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
         <div className={styles.modalBody}>
-          <p>Модальное окно с информацией о задаче в разработке</p>
+          <p>
+            К сожалению, модальное окно редактирования задачи пока находится в
+            разработке. Будет реализовано в ближайшее время. Благодарю за
+            понимание, пожалуйста, проверьте другой функционал.
+          </p>
         </div>
-        <div className={styles.modalFooter}>
+        {/* <div className={styles.modalFooter}>
           <button className={styles.okButton} onClick={onClose}>
             Понятно
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   )
 }
 
-export default SimpleModal
+export default InfoModal
