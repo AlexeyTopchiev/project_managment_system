@@ -11,6 +11,7 @@ const BoardPage = () => {
   const [boardName, setBoardName] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<ErrorResponse | null>(null)
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null)
 
   useEffect(() => {
     const fetchBoardData = async () => {
@@ -49,6 +50,52 @@ const BoardPage = () => {
 
     fetchBoardData()
   }, [boardId])
+
+  const handleDragStart = (task: Task) => {
+    setDraggedTask(task)
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = async (status: "Backlog" | "InProgress" | "Done") => {
+    if (!draggedTask || draggedTask.status === status) {
+      setDraggedTask(null)
+      return
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/tasks/updateStatus/${draggedTask.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ status })
+        }
+      )
+
+      if (!response.ok) {
+        const errorData: ErrorResponse = await response.json()
+        throw {
+          error: errorData.error || "Ошибка обновления статуса",
+          message: errorData.message || "Не удалось обновить статус задачи"
+        }
+      }
+
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === draggedTask.id ? { ...task, status } : task
+        )
+      )
+    } catch (err) {
+      console.error("Error updating task status:", err)
+    } finally {
+      setDraggedTask(null)
+    }
+  }
 
   const groupTasksByStatus = () => {
     const grouped = {
@@ -111,31 +158,58 @@ const BoardPage = () => {
 
       <div className={styles.taskColumns}>
         {/* Колонка Backlog (To Do) */}
-        <div className={styles.taskColumn}>
+        <div
+          className={styles.taskColumn}
+          onDragOver={handleDragOver}
+          onDrop={() => handleDrop("Backlog")}
+        >
           <h3 className={styles.columnHeader}>To Do</h3>
           <div className={styles.tasksList}>
             {groupedTasks.Backlog.map(task => (
-              <TaskCard key={task.id} task={task} boardId={boardId!} />
+              <TaskCard
+                key={task.id}
+                task={task}
+                boardId={boardId!}
+                onDragStart={() => handleDragStart(task)}
+              />
             ))}
           </div>
         </div>
 
         {/* Колонка InProgress */}
-        <div className={styles.taskColumn}>
+        <div
+          className={styles.taskColumn}
+          onDragOver={handleDragOver}
+          onDrop={() => handleDrop("InProgress")}
+        >
           <h3 className={styles.columnHeader}>In Progress</h3>
           <div className={styles.tasksList}>
             {groupedTasks.InProgress.map(task => (
-              <TaskCard key={task.id} task={task} boardId={boardId!} />
+              <TaskCard
+                key={task.id}
+                task={task}
+                boardId={boardId!}
+                onDragStart={() => handleDragStart(task)}
+              />
             ))}
           </div>
         </div>
 
         {/* Колонка Done */}
-        <div className={styles.taskColumn}>
+        <div
+          className={styles.taskColumn}
+          onDragOver={handleDragOver}
+          onDrop={() => handleDrop("Done")}
+        >
           <h3 className={styles.columnHeader}>Done</h3>
           <div className={styles.tasksList}>
             {groupedTasks.Done.map(task => (
-              <TaskCard key={task.id} task={task} boardId={boardId!} />
+              <TaskCard
+                key={task.id}
+                task={task}
+                boardId={boardId!}
+                onDragStart={() => handleDragStart(task)}
+              />
             ))}
           </div>
         </div>
