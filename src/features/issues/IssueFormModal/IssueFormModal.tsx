@@ -5,6 +5,7 @@ import styles from "./IssueFormModal.module.scss"
 import { users, boards } from "../../../app/mockData"
 
 interface IssueFormModalProps {
+  isCreate?: boolean
   isOpen: boolean
   onClose: () => void
   initialData?: Partial<TaskFormData>
@@ -33,6 +34,7 @@ interface TaskResponse {
 }
 
 const IssueFormModal = ({
+  isCreate,
   isOpen,
   onClose,
   initialData,
@@ -223,7 +225,7 @@ const IssueFormModal = ({
                 defaultValue={currentBoardId ?? ""}
                 onChange={handleChange}
                 // disabled={isFromBoardPage}
-                disabled
+                disabled={!isCreate}
               >
                 <option value="">Выберите проект</option>
                 {boardsList?.data.map(board => (
@@ -269,7 +271,11 @@ const IssueFormModal = ({
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="assigneeId">Исполнитель</label>
+              <label htmlFor="assigneeId">
+                {isCreate
+                  ? "Исполнитель*"
+                  : "Исполнитель* (для успешного обновления изменить)"}
+              </label>
               <select
                 id="assigneeId"
                 name="assigneeId"

@@ -11,7 +11,11 @@ const CreateIssueButton: React.FC = () => {
         <span>Создать задачу</span>
       </button>
 
-      <IssueFormModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <IssueFormModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        isCreate={true}
+      />
     </>
   )
 }
