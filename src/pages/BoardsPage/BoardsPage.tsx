@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { Board, ErrorResponse } from "./types"
 import styles from "./BoardsPage.module.scss"
 
-const BoardsPage = () => {
+const BoardsPage: React.FC = () => {
   const [boards, setBoards] = useState<Board[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<ErrorResponse | null>(null)

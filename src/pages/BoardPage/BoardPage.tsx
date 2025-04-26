@@ -1,55 +1,73 @@
 import { useState, useEffect } from "react"
 import { Link, useParams } from "react-router-dom"
 import CreateIssueButton from "../../features/issues/CreateIssueButton/"
+import IssueFormModal from "../../features/issues/IssueFormModal/IssueFormModal"
 import TaskCard from "../../features/board/TaskCard/index"
 import { Task, ErrorResponse } from "./types"
 import styles from "./BoardPage.module.scss"
 
-const BoardPage = () => {
+const BoardPage: React.FC = () => {
   const { boardId } = useParams<{ boardId: string }>()
   const [tasks, setTasks] = useState<Task[]>([])
   const [boardName, setBoardName] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<ErrorResponse | null>(null)
   const [draggedTask, setDraggedTask] = useState<Task | null>(null)
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const fetchTasks = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      const response = await fetch(
+        `http://localhost:8080/api/v1/boards/${boardId}`
+      )
+
+      if (!response.ok) {
+        const errorData: ErrorResponse = await response.json()
+        throw {
+          error: errorData.error || "Ошибка загрузки доски",
+          message: errorData.message || "Не удалось загрузить данные доски"
+        }
+      }
+
+      const data = await response.json()
+      setBoardName(data.data.name || `Доска ${boardId}`)
+      setTasks(data.data || [])
+    } catch (err) {
+      if (typeof err === "object" && err !== null && "message" in err) {
+        setError(err as ErrorResponse)
+      } else {
+        setError({
+          error: "Неизвестная ошибка",
+          message: "Произошла непредвиденная ошибка"
+        })
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleTaskClick = (taskId: number) => {
+    setEditingTaskId(taskId)
+    setIsModalOpen(true)
+  }
+
+  const handleTaskUpdated = () => {
+    fetchTasks() // Обновляем список задач после редактирования
+    setIsModalOpen(false)
+  }
 
   useEffect(() => {
-    const fetchBoardData = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-
-        const response = await fetch(
-          `http://localhost:8080/api/v1/boards/${boardId}`
-        )
-
-        if (!response.ok) {
-          const errorData: ErrorResponse = await response.json()
-          throw {
-            error: errorData.error || "Ошибка загрузки доски",
-            message: errorData.message || "Не удалось загрузить данные доски"
-          }
-        }
-
-        const data = await response.json()
-        setBoardName(data.data.name || `Доска ${boardId}`)
-        setTasks(data.data || [])
-      } catch (err) {
-        if (typeof err === "object" && err !== null && "message" in err) {
-          setError(err as ErrorResponse)
-        } else {
-          setError({
-            error: "Неизвестная ошибка",
-            message: "Произошла непредвиденная ошибка"
-          })
-        }
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchBoardData()
+    fetchTasks()
   }, [boardId])
+
+  const handleTaskCreated = () => {
+    // Обновляем список задач после создания новой
+    fetchTasks()
+  }
 
   const handleDragStart = (task: Task) => {
     setDraggedTask(task)
@@ -149,7 +167,10 @@ const BoardPage = () => {
           <h1>{boardName}</h1>
         </div>
         <div className={styles.headerActions}>
-          <CreateIssueButton />
+          <CreateIssueButton
+          // boardId={boardId!}
+          // onTaskCreated={handleTaskCreated}
+          />
           <Link to="/boards" className={styles.backLink}>
             Все доски
           </Link>
@@ -163,7 +184,7 @@ const BoardPage = () => {
           onDragOver={handleDragOver}
           onDrop={() => handleDrop("Backlog")}
         >
-          <h3 className={styles.columnHeader}>To Do</h3>
+          <h3 className={styles.columnHeader}>Backlog</h3>
           <div className={styles.tasksList}>
             {groupedTasks.Backlog.map(task => (
               <TaskCard
@@ -171,6 +192,7 @@ const BoardPage = () => {
                 task={task}
                 boardId={boardId!}
                 onDragStart={() => handleDragStart(task)}
+                onClick={() => handleTaskClick(task.id)}
               />
             ))}
           </div>
@@ -190,6 +212,7 @@ const BoardPage = () => {
                 task={task}
                 boardId={boardId!}
                 onDragStart={() => handleDragStart(task)}
+                onClick={() => handleTaskClick(task.id)}
               />
             ))}
           </div>
@@ -209,11 +232,19 @@ const BoardPage = () => {
                 task={task}
                 boardId={boardId!}
                 onDragStart={() => handleDragStart(task)}
+                onClick={() => handleTaskClick(task.id)}
               />
             ))}
           </div>
         </div>
       </div>
+      <IssueFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        taskId={editingTaskId}
+        currentBoardId={Number(boardId)}
+        onTaskUpdated={handleTaskUpdated}
+      />
     </div>
   )
 }

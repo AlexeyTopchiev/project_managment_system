@@ -11,20 +11,20 @@ interface IssueFormModalProps {
   // boards?: Board[] //обязательное
   // users?: User[] //обязательное
   currentBoardId?: number
+  taskId?: number | null // Добавляем ID задачи для редактирования
+  onTaskUpdated?: () => void // Колбэк после успешного обновления
 }
 
 const IssueFormModal = ({
   isOpen,
   onClose,
   initialData,
-  // boards,
-  // users,
-  currentBoardId
+  currentBoardId,
+  taskId,
+  onTaskUpdated
 }: IssueFormModalProps) => {
   const location = useLocation()
   const navigate = useNavigate()
-  // const isBoardPage = location.pathname.startsWith("/board/")
-
   const userList: Users = users
   const boardsList: Boards = boards
 
@@ -40,15 +40,43 @@ const IssueFormModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Загружаем данные задачи, если это редактирование
   useEffect(() => {
-    if (initialData) {
-      setFormData(prev => ({
-        ...prev,
-        ...initialData,
-        boardId: currentBoardId ? currentBoardId : initialData.boardId || null
-      }))
+    const fetchTaskData = async () => {
+      if (taskId) {
+        try {
+          const response = await fetch(
+            `http://localhost:8080/api/v1/tasks/${taskId}`
+          )
+          if (!response.ok) {
+            throw new Error("Не удалось загрузить данные задачи")
+          }
+          const data = await response.json()
+          setFormData({
+            title: data.data.title,
+            description: data.data.description,
+            boardId: data.data.boardId,
+            priority: data.data.priority,
+            status: data.data.status,
+            assigneeId: data.data.assigneeId
+          })
+          console.log("olol", data)
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Ошибка загрузки задачи"
+          )
+        }
+      } else if (initialData) {
+        setFormData(prev => ({
+          ...prev,
+          ...initialData,
+          boardId: currentBoardId ? currentBoardId : initialData.boardId || null
+        }))
+      }
     }
-  }, [initialData, currentBoardId])
+
+    fetchTaskData()
+  }, [taskId, initialData, currentBoardId])
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -79,32 +107,42 @@ const IssueFormModal = ({
       const requestData = {
         title: formData.title,
         description: formData.description,
-        boardId: formData.boardId, // уже число или null
+        boardId: formData.boardId,
         priority: formData.priority,
-        assigneeId: formData.assigneeId, // уже число или null
+        assigneeId: formData.assigneeId,
         status: formData.status
       }
-      const response = await fetch(
-        "http://localhost:8080/api/v1/tasks/create",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(requestData)
-        }
-      )
+
+      // Определяем URL и метод в зависимости от того, редактируем или создаем задачу
+      const url = taskId
+        ? `http://localhost:8080/api/v1/tasks/update/${taskId}`
+        : "http://localhost:8080/api/v1/tasks/create"
+
+      const method = taskId ? "PUT" : "POST"
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestData)
+      })
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || "Ошибка при создании задачи")
+        throw new Error(errorData.message || "Ошибка при сохранении задачи")
       }
 
-      const data = await response.json()
       onClose()
-      // Можно добавить редирект или обновление списка задач
-      // navigate(`/board/${formData.boardId}/task/${data.id}`)
-      navigate(`/board/${formData.boardId}`)
+
+      if (taskId) {
+        // Если это было обновление, вызываем колбэк
+        onTaskUpdated?.()
+      } else {
+        // Если создание новой задачи - редирект
+        const data = await response.json()
+        navigate(`/board/${formData.boardId}`)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Неизвестная ошибка")
     } finally {
@@ -120,9 +158,7 @@ const IssueFormModal = ({
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
-          <h2>
-            {initialData?.title ? "Редактирование задачи" : "Создание задачи"}
-          </h2>
+          <h2>{taskId ? "Редактирование задачи" : "Создание задачи"}</h2>
           <button onClick={onClose} className={styles.closeButton}>
             ×
           </button>
@@ -161,7 +197,6 @@ const IssueFormModal = ({
               name="boardId"
               value={formData.boardId ?? ""}
               onChange={handleChange}
-              // disabled={isBoardPage}
               required
             >
               <option value="">Выберите проект</option>
@@ -171,11 +206,6 @@ const IssueFormModal = ({
                 </option>
               ))}
             </select>
-            {/* {isBoardPage && (
-              <div className={styles.note}>
-                Проект определяется текущей доской
-              </div>
-            )} */}
           </div>
 
           <div className={styles.formRow}>
@@ -251,11 +281,7 @@ const IssueFormModal = ({
               className={styles.submitButton}
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? "Сохранение..."
-                : initialData?.title
-                ? "Обновить"
-                : "Создать"}
+              {isSubmitting ? "Сохранение..." : taskId ? "Обновить" : "Создать"}
             </button>
           </div>
         </form>

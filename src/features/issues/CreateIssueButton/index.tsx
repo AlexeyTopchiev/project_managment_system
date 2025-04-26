@@ -2,7 +2,7 @@ import { useState } from "react"
 import IssueFormModal from "../IssueFormModal/IssueFormModal"
 import styles from "./CreateIssueButton.module.scss"
 
-const CreateIssueButton = () => {
+const CreateIssueButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (

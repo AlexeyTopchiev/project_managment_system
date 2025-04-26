@@ -24,3 +24,10 @@ export interface TaskFormData {
   status: "Backlog" | "InProgress" | "Done"
   assigneeId: number | null
 }
+
+// type Assignee = {
+//   id: 1
+//   fullName: string
+//   email: string
+//   avatarUrl: string
+// }

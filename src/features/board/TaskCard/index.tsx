@@ -1,14 +1,19 @@
 import { TaskCardProps } from "./types"
 import styles from "./TaskCard.module.scss"
 
-const TaskCard = ({ task, boardId, onDragStart }: TaskCardProps) => {
+const TaskCard = ({ task, boardId, onDragStart, onClick }: TaskCardProps) => {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.effectAllowed = "move"
     onDragStart()
   }
 
   return (
-    <div className={styles.taskCard} draggable onDragStart={handleDragStart}>
+    <div
+      className={styles.taskCard}
+      draggable
+      onDragStart={handleDragStart}
+      onClick={onClick}
+    >
       <div className={styles.taskHeader}>
         <h4>{task.title}</h4>
         <div className={styles.taskMeta}>

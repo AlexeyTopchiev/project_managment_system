@@ -5,7 +5,7 @@ import InfoModal from "../../components/infoModal"
 import { Task, ApiResponse, ErrorResponse } from "./types"
 import styles from "./IssuesPage.module.scss"
 
-const IssuesPage = () => {
+const IssuesPage: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

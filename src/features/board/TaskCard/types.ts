@@ -18,4 +18,5 @@ export interface TaskCardProps {
   task: Task
   boardId: string
   onDragStart: () => void
+  onClick: () => void
 }
