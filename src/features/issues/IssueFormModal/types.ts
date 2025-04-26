@@ -23,11 +23,10 @@ export interface TaskFormData {
   priority: "Low" | "Medium" | "High"
   status: "Backlog" | "InProgress" | "Done"
   assigneeId: number | null
+  assignee: {
+    id: number
+    fullName: string
+    email: string
+    avatarUrl: string
+  } | null
 }
-
-// type Assignee = {
-//   id: 1
-//   fullName: string
-//   email: string
-//   avatarUrl: string
-// }

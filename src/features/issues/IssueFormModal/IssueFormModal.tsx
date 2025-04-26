@@ -8,11 +8,28 @@ interface IssueFormModalProps {
   isOpen: boolean
   onClose: () => void
   initialData?: Partial<TaskFormData>
-  // boards?: Board[] //обязательное
-  // users?: User[] //обязательное
   currentBoardId?: number
-  taskId?: number | null // Добавляем ID задачи для редактирования
-  onTaskUpdated?: () => void // Колбэк после успешного обновления
+  taskId?: number | null
+  onTaskUpdated?: () => void
+}
+
+interface TaskResponse {
+  data: {
+    id: number
+    title: string
+    description: string
+    boardId: number
+    priority: "Low" | "Medium" | "High"
+    status: "Backlog" | "InProgress" | "Done"
+    assigneeId: number | null
+    assignee: {
+      id: number
+      fullName: string
+      email: string
+      avatarUrl: string
+    } | null
+    boardName: string
+  }
 }
 
 const IssueFormModal = ({
@@ -34,49 +51,56 @@ const IssueFormModal = ({
     boardId: currentBoardId || initialData?.boardId || null,
     priority: initialData?.priority || "Medium",
     status: initialData?.status || "Backlog",
-    assigneeId: initialData?.assigneeId || null
+    assigneeId: initialData?.assigneeId || null,
+    assignee: initialData?.assignee || null
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isLoadingData, setIsLoadingData] = useState(false)
 
-  // Загружаем данные задачи, если это редактирование
+  const isFromBoardPage = location.pathname.startsWith("/board/")
+
   useEffect(() => {
+    if (!isOpen) return
+
     const fetchTaskData = async () => {
-      if (taskId) {
-        try {
+      setIsLoadingData(true)
+      try {
+        if (taskId) {
           const response = await fetch(
             `http://localhost:8080/api/v1/tasks/${taskId}`
           )
           if (!response.ok) {
             throw new Error("Не удалось загрузить данные задачи")
           }
-          const data = await response.json()
+          const data: TaskResponse = await response.json()
+
           setFormData({
             title: data.data.title,
             description: data.data.description,
             boardId: data.data.boardId,
             priority: data.data.priority,
             status: data.data.status,
-            assigneeId: data.data.assigneeId
+            assigneeId: data.data.assigneeId,
+            assignee: data.data.assignee
           })
-          console.log("olol", data)
-        } catch (err) {
-          setError(
-            err instanceof Error ? err.message : "Ошибка загрузки задачи"
-          )
+        } else if (initialData) {
+          setFormData(prev => ({
+            ...prev,
+            ...initialData,
+            boardId: currentBoardId || initialData.boardId || null
+          }))
         }
-      } else if (initialData) {
-        setFormData(prev => ({
-          ...prev,
-          ...initialData,
-          boardId: currentBoardId ? currentBoardId : initialData.boardId || null
-        }))
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Ошибка загрузки задачи")
+      } finally {
+        setIsLoadingData(false)
       }
     }
 
     fetchTaskData()
-  }, [taskId, initialData, currentBoardId])
+  }, [taskId, initialData, currentBoardId, isOpen])
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -113,7 +137,6 @@ const IssueFormModal = ({
         status: formData.status
       }
 
-      // Определяем URL и метод в зависимости от того, редактируем или создаем задачу
       const url = taskId
         ? `http://localhost:8080/api/v1/tasks/update/${taskId}`
         : "http://localhost:8080/api/v1/tasks/create"
@@ -136,10 +159,8 @@ const IssueFormModal = ({
       onClose()
 
       if (taskId) {
-        // Если это было обновление, вызываем колбэк
         onTaskUpdated?.()
       } else {
-        // Если создание новой задачи - редирект
         const data = await response.json()
         navigate(`/board/${formData.boardId}`)
       }
@@ -149,9 +170,7 @@ const IssueFormModal = ({
       setIsSubmitting(false)
     }
   }
-
   console.log("formData", formData)
-
   if (!isOpen) return null
 
   return (
@@ -164,127 +183,148 @@ const IssueFormModal = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.taskForm}>
-          <div className={styles.formGroup}>
-            <label htmlFor="title">Название *</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              maxLength={100}
-            />
+        {isLoadingData ? (
+          <div className={styles.loadingOverlay}>
+            <div className={styles.spinner}></div>
           </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="description">Описание</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={4}
-              maxLength={500}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="boardId">Проект *</label>
-            <select
-              id="boardId"
-              name="boardId"
-              value={formData.boardId ?? ""}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Выберите проект</option>
-              {boardsList?.data.map(board => (
-                <option key={board.id} value={board.id}>
-                  {board.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.formRow}>
+        ) : (
+          <form onSubmit={handleSubmit} className={styles.taskForm}>
             <div className={styles.formGroup}>
-              <label htmlFor="priority">Приоритет</label>
-              <select
-                id="priority"
-                name="priority"
-                value={formData.priority}
+              <label htmlFor="title">Название *</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
                 onChange={handleChange}
-              >
-                <option value="Low">Низкий</option>
-                <option value="Medium">Средний</option>
-                <option value="High">Высокий</option>
-              </select>
+                required
+                maxLength={100}
+              />
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="status">Статус</label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
+              <label htmlFor="description">Описание</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
                 onChange={handleChange}
+                rows={4}
+                maxLength={500}
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="boardId">Проект *</label>
+              <select
+                id="boardId"
+                name="boardId"
+                // value={formData.boardId ?? ""}
+                defaultValue={currentBoardId ?? ""}
+                onChange={handleChange}
+                required
+                disabled={isFromBoardPage}
               >
-                <option value="Backlog">Backlog</option>
-                <option value="InProgress">In Progress</option>
-                <option value="Done">Done</option>
+                <option value="">Выберите проект</option>
+                {boardsList?.data.map(board => (
+                  <option
+                    key={board.id}
+                    value={board.id}
+                    // selected={board.id === formData.boardId}
+                  >
+                    {board.name}
+                  </option>
+                ))}
               </select>
             </div>
-          </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="assigneeId">Исполнитель</label>
-            <select
-              id="assigneeId"
-              name="assigneeId"
-              value={formData.assigneeId ?? ""}
-              onChange={handleChange}
-            >
-              <option value="">Не назначено</option>
-              {userList?.data.map(user => (
-                <option key={user.id} value={user.id}>
-                  {user.fullName}
-                </option>
-              ))}
-            </select>
-          </div>
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor="priority">Приоритет</label>
+                <select
+                  id="priority"
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleChange}
+                >
+                  <option value="Low">Низкий</option>
+                  <option value="Medium">Средний</option>
+                  <option value="High">Высокий</option>
+                </select>
+              </div>
 
-          {formData.boardId && (
-            <div className={styles.boardLinkContainer}>
-              <Link
-                to={`/board/${formData.boardId}`}
-                className={styles.boardLink}
-              >
-                Перейти на доску
-              </Link>
+              <div className={styles.formGroup}>
+                <label htmlFor="status">Статус</label>
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                >
+                  <option value="Backlog">Backlog</option>
+                  <option value="InProgress">In Progress</option>
+                  <option value="Done">Done</option>
+                </select>
+              </div>
             </div>
-          )}
 
-          {error && <div className={styles.error}>{error}</div>}
+            <div className={styles.formGroup}>
+              <label htmlFor="assigneeId">Исполнитель</label>
+              <select
+                id="assigneeId"
+                name="assigneeId"
+                // value={formData.assigneeId ?? ""}
+                defaultValue={formData.assignee?.id}
+                onChange={handleChange}
+              >
+                <option value="">Не назначено</option>
+                {userList?.data.map(user => (
+                  <option
+                    key={user.id}
+                    value={user.id}
+                    // selected={user.id === formData.assignee?.id}
+                  >
+                    {user.fullName}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div className={styles.formActions}>
-            <button
-              type="button"
-              onClick={onClose}
-              className={styles.cancelButton}
-            >
-              Отмена
-            </button>
-            <button
-              type="submit"
-              className={styles.submitButton}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Сохранение..." : taskId ? "Обновить" : "Создать"}
-            </button>
-          </div>
-        </form>
+            {formData.boardId && (
+              <div className={styles.boardLinkContainer}>
+                <Link
+                  to={`/board/${formData.boardId}`}
+                  className={styles.boardLink}
+                >
+                  Перейти на доску
+                </Link>
+              </div>
+            )}
+
+            {error && <div className={styles.error}>{error}</div>}
+
+            <div className={styles.formActions}>
+              <button
+                type="button"
+                onClick={onClose}
+                className={styles.cancelButton}
+              >
+                Отмена
+              </button>
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={isSubmitting}
+              >
+                {isSubmitting
+                  ? "Сохранение..."
+                  : taskId
+                  ? "Обновить"
+                  : "Создать"}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   )
