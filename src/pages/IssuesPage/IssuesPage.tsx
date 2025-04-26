@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import CreateIssueButton from "../../features/issues/CreateIssueButton/"
 import InfoModal from "../../components/infoModal"
+import IssueFormModal from "../../features/issues/IssueFormModal/IssueFormModal" // Импортируем модалку редактирования
 import { Task, ApiResponse, ErrorResponse } from "./types"
 import styles from "./IssuesPage.module.scss"
 
@@ -13,7 +14,9 @@ const IssuesPage: React.FC = () => {
   const [assigneeSearch, setAssigneeSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("")
   const [boardFilter, setBoardFilter] = useState<string>("")
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -43,6 +46,27 @@ const IssuesPage: React.FC = () => {
 
     fetchTasks()
   }, [])
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task)
+    setIsEditModalOpen(true)
+  }
+
+  const handleTaskUpdated = () => {
+    // Обновляем список задач после редактирования
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/v1/tasks")
+        if (!response.ok) throw new Error("Failed to fetch tasks")
+        const data: ApiResponse = await response.json()
+        setTasks(data.data)
+      } catch (err) {
+        console.error("Error refreshing tasks:", err)
+      }
+    }
+    fetchTasks()
+    setIsEditModalOpen(false)
+  }
 
   // Получаем уникальные доски для фильтра
   const uniqueBoards = Array.from(new Set(tasks.map(task => task.boardId))).map(
@@ -196,12 +220,9 @@ const IssuesPage: React.FC = () => {
                 )}
               </div>
             </div>
-            {/* <Link to={`/tasks/${task.id}`} className={styles.viewButton}>
-              Подробнее →
-            </Link> */}
             <div
               className={styles.viewButton}
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => handleTaskClick(task)}
             >
               Подробнее →
             </div>
@@ -211,7 +232,24 @@ const IssuesPage: React.FC = () => {
       <div className={styles.bottomActions}>
         <CreateIssueButton />
       </div>
-      <InfoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {/* Модальное окно информации (если нужно) */}
+      <InfoModal
+        isOpen={isInfoModalOpen}
+        onClose={() => setIsInfoModalOpen(false)}
+      />
+
+      {/* Модальное окно редактирования */}
+      {selectedTask && (
+        <IssueFormModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          initialData={selectedTask}
+          taskId={selectedTask.id}
+          currentBoardId={selectedTask.boardId}
+          onTaskUpdated={handleTaskUpdated}
+        />
+      )}
     </div>
   )
 }
