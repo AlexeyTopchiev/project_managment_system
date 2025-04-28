@@ -84,14 +84,15 @@ const IssueFormModal = ({
             boardId: data.data.boardId,
             priority: data.data.priority,
             status: data.data.status,
-            assigneeId: data.data.assigneeId,
+            assigneeId: data.data.assignee?.id || data.data.assigneeId,
             assignee: data.data.assignee
           })
         } else if (initialData) {
           setFormData(prev => ({
             ...prev,
             ...initialData,
-            boardId: currentBoardId || initialData.boardId || null
+            boardId: currentBoardId || initialData.boardId || null,
+            assigneeId: initialData.assignee?.id || initialData.assigneeId
           }))
         }
       } catch (err) {
@@ -118,10 +119,21 @@ const IssueFormModal = ({
           : Number(value)
         : value
 
-    setFormData(prev => ({
-      ...prev,
-      [name]: numericValue
-    }))
+    // Обновляем состояние формы
+    setFormData(prev => {
+      const updatedData = {
+        ...prev,
+        [name]: numericValue
+      }
+
+      // Если изменяем assigneeId, обновляем также объект assignee
+      if (name === "assigneeId") {
+        updatedData.assignee =
+          userList.data.find(user => user.id === Number(value)) || null
+      }
+
+      return updatedData
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -172,6 +184,7 @@ const IssueFormModal = ({
       setIsSubmitting(false)
     }
   }
+
   console.log("formData", formData)
   if (!isOpen) return null
 
@@ -229,11 +242,7 @@ const IssueFormModal = ({
               >
                 <option value="">Выберите проект</option>
                 {boardsList?.data.map(board => (
-                  <option
-                    key={board.id}
-                    value={board.id}
-                    // selected={board.id === formData.boardId}
-                  >
+                  <option key={board.id} value={board.id}>
                     {board.name}
                   </option>
                 ))}
@@ -271,25 +280,16 @@ const IssueFormModal = ({
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="assigneeId">
-                {isCreate
-                  ? "Исполнитель*"
-                  : "Исполнитель* (для успешного обновления изменить)"}
-              </label>
+              <label htmlFor="assigneeId">Исполнитель*</label>
               <select
                 id="assigneeId"
                 name="assigneeId"
-                // value={formData.assigneeId ?? ""}
-                defaultValue={formData.assignee?.id}
+                value={formData.assigneeId ?? ""}
                 onChange={handleChange}
               >
                 <option value="">Не назначено</option>
                 {userList?.data.map(user => (
-                  <option
-                    key={user.id}
-                    value={user.id}
-                    // selected={user.id === formData.assignee?.id}
-                  >
+                  <option key={user.id} value={user.id}>
                     {user.fullName}
                   </option>
                 ))}
