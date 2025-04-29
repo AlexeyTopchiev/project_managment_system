@@ -237,8 +237,7 @@ const IssueFormModal = ({
                 // value={formData.boardId ?? ""}
                 defaultValue={currentBoardId ?? ""}
                 onChange={handleChange}
-                // disabled={isFromBoardPage}
-                disabled={!isCreate}
+                disabled={!isCreate && isFromBoardPage}
               >
                 <option value="">Выберите проект</option>
                 {boardsList?.data.map(board => (

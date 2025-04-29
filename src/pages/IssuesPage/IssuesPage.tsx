@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import CreateIssueButton from "../../features/issues/CreateIssueButton/"
-import InfoModal from "../../components/infoModal"
 import IssueFormModal from "../../features/issues/IssueFormModal/IssueFormModal" // Импортируем модалку редактирования
 import { Task, ApiResponse, ErrorResponse } from "./types"
 import styles from "./IssuesPage.module.scss"
@@ -14,7 +13,6 @@ const IssuesPage: React.FC = () => {
   const [assigneeSearch, setAssigneeSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("")
   const [boardFilter, setBoardFilter] = useState<string>("")
-  const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
@@ -232,12 +230,6 @@ const IssuesPage: React.FC = () => {
       <div className={styles.bottomActions}>
         <CreateIssueButton />
       </div>
-
-      {/* Модальное окно информации (если нужно) */}
-      <InfoModal
-        isOpen={isInfoModalOpen}
-        onClose={() => setIsInfoModalOpen(false)}
-      />
 
       {/* Модальное окно редактирования */}
       {selectedTask && (
